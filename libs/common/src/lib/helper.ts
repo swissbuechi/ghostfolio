@@ -258,6 +258,20 @@ export function getCurrencyFromSymbol(aSymbol = '') {
   return aSymbol.replace(DEFAULT_CURRENCY, '');
 }
 
+export function getCountryName({
+  code,
+  locale = getLocale()
+}: {
+  code: string;
+  locale?: string;
+}): string {
+  try {
+    return new Intl.DisplayNames([locale], { type: 'region' }).of(code) ?? code;
+  } catch {
+    return code;
+  }
+}
+
 export function getDateFnsLocale(aLanguageCode?: string) {
   if (aLanguageCode === 'ca') {
     return ca;
@@ -429,6 +443,20 @@ export function isCurrency(aCurrency: string) {
   }
 
   return isISO4217CurrencyCode(aCurrency) || isDerivedCurrency(aCurrency);
+}
+
+export function isCurrencySymbol(aSymbol: string) {
+  if (!aSymbol) {
+    return false;
+  }
+
+  return (
+    aSymbol.length >= 2 * DEFAULT_CURRENCY.length &&
+    isCurrency(
+      aSymbol.substring(0, aSymbol.length - DEFAULT_CURRENCY.length)
+    ) &&
+    isCurrency(aSymbol.substring(aSymbol.length - DEFAULT_CURRENCY.length))
+  );
 }
 
 export function isDerivedCurrency(aCurrency: string) {
